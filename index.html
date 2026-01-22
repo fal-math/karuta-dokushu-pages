@@ -6,282 +6,43 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>読手ツール</title>
   <meta name="theme-color" content="#111111" />
-  <style>
-    :root {
-      --c0: #22c55e;
-      --c1: #f59e0b;
-      --c2: #3b82f6;
-      --c3: #ef4444;
-      --bg: #ffffff;
-      --fg: #0f172a;
-      --c-prev: #333;
-      --c-next: #048132;
-      --c-grey: #94a3b8;
-      --bg-block: #fafafa;
-      --muted: #64748b;
-      --ring-shadow: 0 8px 24px rgba(15, 23, 42, .08), inset 0 0 0 1px rgba(15, 23, 42, .08);
-      --inner-gap: 15%;
-    }
-
-    * {
-      box-sizing: border-box
-    }
-
-    html,
-    body {
-      height: 100dvh;
-      margin: 0;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      display: grid;
-      place-items: center;
-    }
-
-    main {
-      height: 100%;
-      width: 100%;
-      max-width: 100dvw;
-      margin: 0;
-      padding: 0;
-      display: grid;
-    }
-
-    section {
-      padding: 5px;
-      background: #fff
-    }
-
-    .kudiv {
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-    }
-
-    .kudiv>div {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-    }
-
-    /* 札ブロック */
-    .vertical-text-block {
-      writing-mode: vertical-rl;
-      text-orientation: upright;
-      line-height: 2;
-      font-size: clamp(14px, 2.5vmin, 16px);
-      min-height: 250px;
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-      padding: 5px;
-      border: 2px solid;
-      background: var(--bg-block);
-    }
-
-    /* 前札・次札 */
-    #prevCard {
-      border-color: var(--c-prev);
-    }
-
-    #nextCard {
-      border-color: var(--c-next);
-    }
-
-    /* 灰色文字 */
-    .grey {
-      color: var(--c-grey);
-    }
-
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-      border-bottom: 1px solid rgba(15, 23, 42, .12);
-      padding: 6px 12px;
-      height: 44px;
-      position: relative;
-      z-index: 200;
-    }
-
-    .header-left {
-      font-weight: bold;
-      color: var(--fg);
-      font-family: monospace;
-    }
-
-    .hamburger {
-      font-size: 24px;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .menu-panel {
-      position: absolute;
-      top: 44px;
-      /* ヘッダーの下 */
-      right: 0;
-      background: #fff;
-      border: 1px solid rgba(15, 23, 42, .12);
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, .2);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .field input[type="number"] {
-      width: 8ch;
-      font-size: 16px;
-      /* iOS ズーム防止 */
-    }
-
-
-    /* gauge */
-    .gauge-wrap {
-      display: grid;
-      place-items: center;
-      height: 80%;
-    }
-
-    .gauge {
-      position: relative;
-      width: min(64vmin, 300px);
-      aspect-ratio: 1
-    }
-
-    .gauge .segments,
-    .gauge .elapsed,
-    .gauge .center {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%
-    }
-
-    .gauge .segments {
-      box-shadow: var(--ring-shadow);
-      transform: rotate(0deg)
-    }
-
-    .gauge .elapsed {
-      pointer-events: none;
-      transition: background 0.05s linear;
-      background: conic-gradient(from 0deg, transparent 0 var(--deg), rgba(15, 23, 42, .35) var(--deg) 360deg);
-    }
-
-    .gauge .center {
-      inset: var(--inner-gap);
-      background: var(--bg);
-      display: grid;
-      place-items: center;
-      box-shadow: var(--ring-shadow)
-    }
-
-    .readout {
-      text-align: center;
-      line-height: 1.15
-    }
-
-    .readout .main {
-      font-weight: 800;
-      font-size: clamp(28px, 10vmin, 48px)
-    }
-
-    .readout .sub {
-      color: var(--muted);
-      font-size: clamp(12px, 2.8vmin, 14px)
-    }
-
-    @media (max-width:420px) {
-      .gauge {
-        width: 88vmin
-      }
-    }
-
-    /* controls */
-    .controls-center {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .column {
-      flex-direction: column;
-    }
-
-    .row {
-      flex-direction: row;
-    }
-
-    .controls-center .btn {
-      padding: 6px 12px;
-      font-size: 14px;
-      border-radius: 8px;
-    }
-
-    button,
-    input {
-      font: inherit
-    }
-
-    .btn {
-      padding: 10px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(15, 23, 42, .12);
-      background: #fff;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, .06);
-      transition: transform .05s ease;
-      font-weight: 700
-    }
-
-    .btn:active {
-      transform: translateY(1px)
-    }
-
-    .btn.primary {
-      background: #111827;
-      color: #fff;
-      border-color: #111827
-    }
-
-    .field {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border: 1px solid rgba(15, 23, 42, .12);
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, .06)
-    }
-
-    .field input[type="number"] {
-      width: 6ch;
-      padding: 4px 6px;
-      border: 1px solid rgba(15, 23, 42, .15);
-      border-radius: 8px
-    }
-  </style>
+  <link rel="stylesheet" href="src/css/variables.css">
+  <link rel="stylesheet" href="src/css/main.css">
+  <link rel="stylesheet" href="src/css/components.css">
 </head>
 
 <body>
-  <main>
+  <!-- スタート画面 -->
+  <div id="startScreen" class="overlay">
+    <div class="modal">
+      <h1>読手ツール</h1>
+      <p>練習モードを選択してください</p>
+      <div class="start-options">
+        <button id="btnStartAll" class="btn primary large">全100首で開始</button>
+        <button id="btnOpenPicker" class="btn large">札を選択して開始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 札選択ピッカー -->
+  <div id="pickerOverlay" class="overlay hidden">
+    <div class="modal picker-modal">
+      <h2>札を選択</h2>
+      <div class="picker-controls">
+        <button id="btnSelectAll" class="btn small">すべて選択</button>
+        <button id="btnDeselectAll" class="btn small">すべて解除</button>
+      </div>
+      <div id="cardGrid" class="card-grid">
+        <!-- 1-100のボタンが動的に生成される -->
+      </div>
+      <div class="picker-footer">
+        <button id="btnStartSelected" class="btn primary large">選択した札で開始</button>
+        <button id="btnClosePicker" class="btn">戻る</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="appMain" class="hidden">
     <header class="app-header">
       <div class="header-left">
         <span id="clock">--:--</span>
@@ -289,6 +50,9 @@
       <div class="header-right">
         <button id="menuToggle" class="hamburger">☰</button>
         <div id="menuPanel" class="menu-panel hidden">
+          <div class="field">
+            <button class="btn" style="width:100%" onclick="exitToStart()">練習を終了してスタート画面へ</button>
+          </div>
           <div class="field">
             <label for="unitSeconds">1ユニット</label>
             <input id="unitSeconds" type="number" min="0.8" step="0.01" value="1.0" inputmode="decimal" />
@@ -327,281 +91,7 @@
     </section>
   </main>
 
-  <!-- 絶対にデータが飛ばないような設計は可能？キャッシュとか使えばいけるのか？ -->
-  <!-- 戻る進むボタンはポップアップ出す -->
-
-  <script>
-    /* =======================
-       定数・初期データ
-    ======================= */
-    // タイマーの比率（5:3:1:6）
-    const SEGMENT_UNITS = [5, 3, 1, 6];
-    const SEGMENT_COLORS = [
-      getComputedStyle(document.documentElement).getPropertyValue('--c0').trim() || '#22c55e',
-      getComputedStyle(document.documentElement).getPropertyValue('--c1').trim() || '#f59e0b',
-      getComputedStyle(document.documentElement).getPropertyValue('--c2').trim() || '#3b82f6',
-      getComputedStyle(document.documentElement).getPropertyValue('--c3').trim() || '#ef4444',
-    ];
-
-    // フォールバック（ルビ付きの最小サンプル）
-    const CARD_DATA_FALLBACK_JSON = '[{"id": 78,"lines": [[{"rb": "淡路島","rt": "あわじしま"},"--"],["かよ",{"rb": "ふ","rt": "-"},{"rb": "千鳥","rt": "ちどり"},"の","-"],[{"rb": "鳴く","rt": "なく"},{"rb": "声","rt": "こえ"},"--","に","--"],[{"rb": "幾夜","rt": "いくよ"},"-","ねざめぬ","--"],[{"rb": "須磨","rt": "すま"},"の",{"rb": "関","rt": "せき"},"--",{"rb": "守","rt": "もり"}]]},{"id": 45,"lines": [[{"rb": "あはれ","rt": "あわれ"},"とも","--"],[{"rb": "いふ","rt": "ゆ-"},"べき",{"rb": "人","rt": "ひと"},"は"],["-",{"rb": "思","rt": "おも"},{"rb": "ほ","rt": "(お)"},"え","--","で","--"],[{"rb": "身","rt": "み"},"の","-","いた",{"rb": "づ","rt": "ず"},"らに","--"],["なりぬべき","--","かな"]]}]';
-    // 序歌
-    const JOKA = JSON.parse('{"id": 0,"kimariji": null,"lines": [[{"rb": "難波","rt": "なにわ"},{"rb": "津","rt": "ず"},"に","ーー"],[{"rb": "咲","rt": "さ"},"くや","この",{"rb": "花","rt": "はな"},"ー"],[{"rb": "冬","rt": "ふゆ"},"ごも","ーー","り","ーー"],[{"rb": "今","rt": "いま"},"を","ーー",{"rb": "春","rt": "はる"},"べと","ーー"],[{"rb": "咲","rt": "さ"},"くや","ーー","この",{"rb": "花","rt": "はな"}]]}')
-    /* =======================
-       DOM 参照
-    ======================= */
-    // キュー表示
-    const prevCardEl = document.getElementById('prevCard');
-    const nextCardEl = document.getElementById('nextCard');
-
-    // ナビ＆進捗
-    const btnPrevEl = document.getElementById('btnPrev');
-    const btnNextEl = document.getElementById('btnNext');
-    const progressLabelEl = document.getElementById('progressLabel');
-
-    // タイマーUI
-    const segmentsRingEl = document.getElementById('segments');
-    const elapsedOverlayEl = document.getElementById('elapsed');
-    const segmentLabelEl = document.getElementById('segmentLabel');
-    const unitSecondsInputEl = document.getElementById('unitSeconds');
-    const btnStartTimerEl = document.getElementById('btnStartTimer');
-    const btnResetTimerEl = document.getElementById('btnResetTimer');
-
-    // メニュー開閉
-    const menuToggleEl = document.getElementById("menuToggle");
-    const menuPanelEl = document.getElementById("menuPanel");
-
-    /* =======================
-       ハンバーガーメニュー
-    ======================= */
-    menuToggleEl.addEventListener("click", () => {
-      menuPanelEl.classList.toggle("hidden");
-    });
-    document.addEventListener("click", (e) => {
-      if (!menuPanelEl.contains(e.target) && !menuToggleEl.contains(e.target)) {
-        menuPanelEl.classList.add("hidden");
-      }
-    });
-
-    /* =======================
-       時計表示
-    ======================= */
-    const clockEl = document.getElementById("clock");
-
-    // 現在時刻を更新する関数
-    function updateClock() {
-      const weekdays = ["日", "月", "火", "水", "木", "金", "土"]
-      const now = new Date();
-      const MM = String(now.getMonth() + 1).padStart(2, "0");
-      const dd = String(now.getDate()).padStart(2, "0");
-      const day = now.getDay();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
-      clockEl.textContent = `${MM}/${dd}(${weekdays[day]}) ${hh}:${mm}:${ss}`;
-    }
-
-    // 1秒ごとに更新
-    setInterval(updateClock, 1000);
-    updateClock(); // 初期表示
-
-    /* =======================
-       タイマー（円グラフ）
-    ======================= */
-    const TOTAL_UNITS = SEGMENT_UNITS.reduce((s, v) => s + v, 0);
-    const CUMULATIVE_UNITS = SEGMENT_UNITS.reduce((arr, u) => { arr.push((arr.at(-1) || 0) + u); return arr; }, []);
-
-    function paintSegmentsRing() {
-      let acc = 0; const stops = [];
-      for (let i = 0; i < SEGMENT_UNITS.length; i++) {
-        const start = (acc / TOTAL_UNITS) * 360;
-        acc += SEGMENT_UNITS[i];
-        const end = (acc / TOTAL_UNITS) * 360;
-        stops.push(`${SEGMENT_COLORS[i]} ${start}deg ${end}deg`);
-      }
-      segmentsRingEl.style.background = `conic-gradient(from 0deg, ${stops.join(',')})`;
-    }
-
-    const unitSeconds = () => Math.max(parseFloat(unitSecondsInputEl.value) || 1, 0.1);
-    const totalMs = () => TOTAL_UNITS * 1000 * unitSeconds();
-
-    let isTimerRunning = false;
-    let rafId = null;
-    let timerStartMs = 0;   // 再開時刻
-    let carriedElapsedMs = 0; // 累積経過
-
-    function currentSegmentIndex(elapsedMs) {
-      const elapsedUnits = elapsedMs / (1000 * unitSeconds());
-      for (let i = 0; i < CUMULATIVE_UNITS.length; i++) {
-        if (elapsedUnits < CUMULATIVE_UNITS[i]) return i;
-      }
-      return CUMULATIVE_UNITS.length - 1;
-    }
-
-    function timerLoop(now) {
-      if (!isTimerRunning) return;
-      const t = now ?? performance.now();
-      const elapsed = carriedElapsedMs + (t - timerStartMs);
-      const T = totalMs();
-
-      const clamped = Math.min(elapsed, T);
-      const frac = clamped / T;
-      elapsedOverlayEl.style.setProperty('--deg', (frac * 360) + 'deg');
-
-      const segIdx = currentSegmentIndex(clamped);
-      const segEndsMs = CUMULATIVE_UNITS.map(u => u * 1000 * unitSeconds());
-      const segStart = segIdx === 0 ? 0 : segEndsMs[segIdx - 1];
-      const segEnd = segEndsMs[segIdx];
-      const leftMs = Math.max(0, segEnd - clamped);
-      const segmentLabelArray = ["下の句", "余韻", "間合い", "上の句"];
-      segmentLabelEl.textContent = `${segmentLabelArray[segIdx]}`;
-
-      if (elapsed >= T) {
-        isTimerRunning = false;
-        cancelAnimationFrame(rafId); rafId = null;
-        carriedElapsedMs = T;
-        btnStartTimerEl.disabled = false;
-        return;
-      }
-      rafId = requestAnimationFrame(timerLoop);
-    }
-
-    function startTimer() {
-      if (isTimerRunning) return;
-      isTimerRunning = true;
-      timerStartMs = performance.now();
-      rafId = requestAnimationFrame(timerLoop);
-      btnStartTimerEl.disabled = true;
-    }
-    function resetTimer() {
-      isTimerRunning = false;
-      cancelAnimationFrame(rafId); rafId = null;
-      carriedElapsedMs = 0; timerStartMs = 0;
-      elapsedOverlayEl.style.setProperty('--deg', '0deg');
-      segmentLabelEl.textContent = `---`;
-      btnStartTimerEl.disabled = false;
-    }
-
-    /* =======================
-       札データと表示
-    ======================= */
-    async function loadCards() {
-      try {
-        // 必要に応じてパスを調整（例: ./data/hyakunin_isshu.json）
-        const res = await fetch("./hyakunin_isshu.json", { cache: "reload" });
-        if (!res.ok) throw new Error(res.statusText);
-        const arr = await res.json();
-        return Array.isArray(arr) ? arr : JSON.parse(CARD_DATA_FALLBACK_JSON);
-      } catch {
-        return JSON.parse(CARD_DATA_FALLBACK_JSON);
-      }
-    }
-
-    /** 1行をHTML化 */
-    function renderParts(parts) {
-      return parts.map(p => {
-        if (typeof p === "string") return p;
-        if (typeof p === "object" && "rb" in p && "rt" in p) {
-          return `<ruby>${p.rb}<rt>${p.rt}</rt></ruby>`;
-        }
-        return "";
-      }).join("");
-    }
-
-    /** 一首（5句）を4行構成に整形 */
-    function renderTanka(lines, isNext) {
-      if (lines.length !== 5) {
-        console.error("一首は必ず5句である必要があります", lines);
-        return "";
-      }
-
-      const upperLine1 = renderParts(lines[0]) + renderParts(lines[1]);
-      const upperLine2 = renderParts(lines[2]);
-      const lowerLine1 = renderParts(lines[3]);
-      const lowerLine2 = renderParts(lines[4]);
-
-      const greyUpper = isNext ? "" : " grey";
-      const greyLower = isNext ? " grey" : "";
-
-      return `
-    <div class="upper${greyUpper}">${upperLine1}</div>
-    <div class="upper${greyUpper}">${upperLine2}</div>
-    <div class="lower${greyLower}">${lowerLine1}</div>
-    <div class="lower${greyLower}">${lowerLine2}</div>
-  `;
-    }
-
-    /** 状態 */
-    let cards = [];          // 元データ配列（読み順とは無関係）
-    let deck = [];           // 表示順の札配列（ここでは cards をそのまま利用。必要ならシャッフルして代入）
-    let currentIndex = 0;    // 現在位置（0 始まり）
-
-    function renderCurrentCard() {
-      if (deck.length < 2) {
-        progressLabelEl.textContent = "0 / 0";
-        btnPrevEl.disabled = true;
-        btnNextEl.disabled = true;
-        return;
-      }
-      const currentCard = deck[currentIndex];
-      const prevCard = currentIndex > 0 ? deck[currentIndex - 1] : null;
-
-      nextCardEl.innerHTML = renderTanka(currentCard.lines, true);
-      prevCardEl.innerHTML = prevCard ? renderTanka(prevCard.lines, false) : "???";
-
-      // 進捗
-      progressLabelEl.textContent = `${currentIndex}/${cards.length}`;
-
-      // ボタン状態
-      btnPrevEl.disabled = (currentIndex === 1);
-      btnNextEl.disabled = (currentIndex === cards.length);
-    }
-
-    function goPrev() {
-      if (currentIndex > 1) {
-        currentIndex -= 1;
-        renderCurrentCard();
-      }
-    }
-    function goNext() {
-      if (currentIndex < deck.length) {
-        currentIndex += 1;
-        renderCurrentCard();
-      }
-    }
-
-    /* =======================
-       初期化
-    ======================= */
-    async function initialize() {
-      paintSegmentsRing();
-
-      // データ読込み
-      cards = await loadCards();
-      // 表示順を決定（必要ならシャッフル）
-      deck = [JOKA, ...cards];
-
-      console.debug("Loaded cards:", cards);
-      console.debug("Loaded decks:", deck);
-      currentIndex = 1;
-
-      // 表示
-      renderCurrentCard();
-      resetTimer();
-    }
-
-    /* =======================
-       イベント
-    ======================= */
-    btnPrevEl.addEventListener('click', goPrev);
-    btnNextEl.addEventListener('click', () => { resetTimer(); goNext() });
-    btnStartTimerEl.addEventListener('click', startTimer);
-    btnResetTimerEl.addEventListener('click', resetTimer);
-    unitSecondsInputEl.addEventListener('change', () => { resetTimer(); paintSegmentsRing(); });
-
-    // 実行
-    initialize();
-  </script>
+  <script type="module" src="src/js/main.js"></script>
 </body>
 
 </html>

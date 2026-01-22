@@ -1,0 +1,15 @@
+:root {
+  --c0: #22c55e;
+  --c1: #f59e0b;
+  --c2: #3b82f6;
+  --c3: #ef4444;
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --c-prev: #333;
+  --c-next: #048132;
+  --c-grey: #94a3b8;
+  --bg-block: #fafafa;
+  --muted: #64748b;
+  --ring-shadow: 0 8px 24px rgba(15, 23, 42, .08), inset 0 0 0 1px rgba(15, 23, 42, .08);
+  --inner-gap: 15%;
+}
