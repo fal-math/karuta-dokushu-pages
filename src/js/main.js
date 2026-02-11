@@ -40,6 +40,7 @@ const dom = {
     btnDeselectAll: document.getElementById('btnDeselectAll'),
     sortButtons: document.getElementById('sortButtons'),
     pickerContent: document.getElementById('pickerContent'),
+    selectionCount: document.getElementById('selectionCount'),
 };
 
 /* =======================
@@ -49,7 +50,7 @@ const dom = {
 async function init() {
     // 依存モジュールへのDOM渡し
     initFlow(dom);
-    initPicker(dom.pickerContent);
+    initPicker(dom.pickerContent, dom.selectionCount);
 
     // 時計開始
     updateClock(dom.clock);

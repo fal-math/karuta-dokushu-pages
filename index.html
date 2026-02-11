@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>読手ツール</title>
   <meta name="theme-color" content="#111111" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="src/css/variables.css">
   <link rel="stylesheet" href="src/css/main.css">
   <link rel="stylesheet" href="src/css/components.css">
@@ -30,21 +31,21 @@
       <h2>札を選択</h2>
       <div class="picker-toolbar">
         <div class="sort-grp" id="sortButtons">
-          <button class="btn small" data-sort="kimariji">五十音</button>
           <button class="btn small" data-sort="group">むすめふさほせ</button>
-          <button class="btn small" data-sort="kimariji-len">文字数</button>
           <button class="btn small" data-sort="id">歌番号</button>
+          <button class="btn small" data-sort="kimariji">五十音</button>
+          <button class="btn small" data-sort="kimariji-len">文字数</button>
         </div>
         <div class="action-grp">
-          <button id="btnSelectAll" class="btn small">全選択</button>
-          <button id="btnDeselectAll" class="btn small">全解除</button>
+          <button id="btnSelectAll" class="btn small text-only">全選択</button>
+          <button id="btnDeselectAll" class="btn small text-only">全解除</button>
         </div>
       </div>
       <div id="pickerContent" class="picker-content">
         <!-- JSで生成 -->
       </div>
       <div class="picker-footer">
-        <button id="btnStartSelected" class="btn primary large">選択した札で開始</button>
+        <button id="btnStartSelected" class="btn primary large">選択した札（0首）で開始</button>
         <button id="btnClosePicker" class="btn">戻る</button>
       </div>
     </div>

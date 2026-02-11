@@ -8,9 +8,9 @@ export const state = {
     deck: [],
     currentIndex: 1,
     /** @type {Set<number>} */
-    selectedIds: new Set(),
+    selectedIds: new Set([87, 18, 57, 22, 70, 81, 77]), // むすめふさほせ
     /** @type {'id'|'kimariji'|'kimariji-len'|'group'} */
-    currentSort: 'id',
+    currentSort: 'group',
     unitSeconds: 1.0,
 };
 

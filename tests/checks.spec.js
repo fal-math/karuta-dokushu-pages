@@ -6,9 +6,13 @@ test.describe('Picker UI Tests', () => {
         // ピッカーを開く
         await page.click('#btnOpenPicker');
         await expect(page.locator('#pickerOverlay')).not.toHaveClass(/hidden/);
+        // 全解除してクリーンな状態にする
+        await page.click('#btnDeselectAll');
     });
 
-    test('Matrix View (Default ID Sort)', async ({ page }) => {
+    test('Matrix View (ID Sort)', async ({ page }) => {
+        // 「歌番号」ボタンをクリック
+        await page.click('button[data-sort="id"]');
         // Matrixテーブルが表示されていること
         await expect(page.locator('.matrix-table')).toBeVisible();
         // ID 100が存在すること (Row 0, Col 0)
@@ -55,7 +59,8 @@ test.describe('Picker UI Tests', () => {
     });
 
     test('Matrix Row Selection (Tens place)', async ({ page }) => {
-        // デフォルトは歌番号順 (Matrix)
+        // 「歌番号」ボタンをクリック
+        await page.click('button[data-sort="id"]');
 
         // 「0-」行（十の位＝0）をクリック
         const row0 = page.locator('.matrix-header', { hasText: /^0-$/ });

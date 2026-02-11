@@ -1,9 +1,11 @@
 import { state, getters, mutators } from './state.js';
 
 // DOM References (will be initialized in initPicker)
+/** @type {HTMLElement} */
 let pickerContentEl = null;
 
 const GROUP_ORDER_STR = "むすめふさほせうつしもゆいちひきはやよかみたこおわなあ";
+const ONE_JI_STR = "むすめふさほせ";
 const GROUP_MAP = {};
 Array.from(GROUP_ORDER_STR).forEach((char, idx) => {
     GROUP_MAP[char] = idx;
@@ -40,7 +42,8 @@ function renderMatrix() {
     thead.innerHTML = '<th class="matrix-header"></th>';
     for (let c = 0; c < 10; c++) {
         const th = document.createElement('th');
-        th.className = 'matrix-header';
+        th.className = 'matrix-header col-header';
+        th.dataset.col = String(c);
         th.textContent = String(c);
         th.addEventListener('click', () => toggleColumn(c));
         thead.appendChild(th);
@@ -50,7 +53,8 @@ function renderMatrix() {
     for (let r = 0; r < 10; r++) {
         const tr = document.createElement('tr');
         const th = document.createElement('th');
-        th.className = 'matrix-header';
+        th.className = 'matrix-header row-header';
+        th.dataset.row = String(r);
         th.textContent = `${r}-`;
         th.addEventListener('click', () => toggleRow(r));
         tr.appendChild(th);
@@ -93,7 +97,11 @@ function renderSections(sortType) {
             key = `${k.length}字`;
         } else if (sortType === 'group') {
             const char = k.charAt(0);
-            key = GROUP_MAP[char] !== undefined ? char : '他';
+            if (ONE_JI_STR.includes(char)) {
+                key = ONE_JI_STR;
+            } else {
+                key = GROUP_MAP[char] !== undefined ? char : '他';
+            }
         }
         if (!groups[key]) groups[key] = [];
         groups[key].push(card);
@@ -106,6 +114,9 @@ function renderSections(sortType) {
         sortedKeys.sort((a, b) => parseInt(a) - parseInt(b));
     } else if (sortType === 'group') {
         sortedKeys.sort((a, b) => {
+            if (a === ONE_JI_STR) return -1; // First
+            if (b === ONE_JI_STR) return 1;
+
             const idxA = GROUP_MAP[a] !== undefined ? GROUP_MAP[a] : 999;
             const idxB = GROUP_MAP[b] !== undefined ? GROUP_MAP[b] : 999;
             return idxA - idxB;
@@ -114,14 +125,40 @@ function renderSections(sortType) {
 
     sortedKeys.forEach(key => {
         const groupCards = groups[key];
-        groupCards.sort((a, b) => (a.kimariji || '').localeCompare(b.kimariji || '', 'ja'));
+
+        // Sorting logic inside group
+        if (sortType === 'kimariji-len') {
+            // Secondary sort: Musume Fusahose
+            groupCards.sort((a, b) => {
+                const ka = (a.kimariji || '').charAt(0);
+                const kb = (b.kimariji || '').charAt(0);
+                const idxA = GROUP_MAP[ka] !== undefined ? GROUP_MAP[ka] : 999;
+                const idxB = GROUP_MAP[kb] !== undefined ? GROUP_MAP[kb] : 999;
+                if (idxA !== idxB) return idxA - idxB;
+                return (a.kimariji || '').localeCompare(b.kimariji || '', 'ja');
+            });
+        } else if (sortType === 'group' && key === ONE_JI_STR) {
+            // Musume Sort within the group
+            groupCards.sort((a, b) => {
+                const ka = (a.kimariji || '').charAt(0);
+                const kb = (b.kimariji || '').charAt(0);
+                return GROUP_MAP[ka] - GROUP_MAP[kb];
+            });
+        } else {
+            // Default: Aiueo
+            groupCards.sort((a, b) => (a.kimariji || '').localeCompare(b.kimariji || '', 'ja'));
+        }
 
         const sectionBlock = document.createElement('div');
         sectionBlock.className = 'section-block';
 
         const header = document.createElement('div');
         header.className = 'section-header';
-        header.innerHTML = `<span>${key} <small>(${groupCards.length})</small></span> <span>▼</span>`;
+
+        // Display count differently if aggregated
+        const countLabel = `(${groupCards.length}首)`;
+
+        header.innerHTML = `<span>${key} <small>${countLabel}</small></span> <span>▼</span>`;
         header.addEventListener('click', () => {
             batchToggleIds(groupCards.map(c => c.id));
         });
@@ -134,7 +171,7 @@ function renderSections(sortType) {
             const item = document.createElement('div');
             item.className = 'card-item';
             item.dataset.id = String(card.id);
-            item.textContent = `${card.kimariji} (${card.id})`;
+            item.textContent = `${card.kimariji}`;
             if (state.selectedIds.has(card.id)) item.classList.add('selected');
             item.addEventListener('click', () => toggleId(card.id));
             grid.appendChild(item);
@@ -198,21 +235,91 @@ function toggleRow(ten) {
 export function updatePickerUI() {
     if (!pickerContentEl) return;
 
-    // Matrix Cells
-    const cells = pickerContentEl.querySelectorAll('.matrix-cell');
-    cells.forEach(cell => {
-        // @ts-ignore
-        const id = parseInt(cell.dataset.id, 10);
-        if (state.selectedIds.has(id)) cell.classList.add('selected');
-        else cell.classList.remove('selected');
-    });
+    const count = state.selectedIds.size;
+    const btnStart = document.getElementById('btnStartSelected');
+    if (btnStart) {
+        btnStart.textContent = `選択した札（${count}首）で開始`;
+    }
 
-    // Section Items
-    const items = pickerContentEl.querySelectorAll('.card-item');
-    items.forEach(item => {
-        // @ts-ignore
-        const id = parseInt(item.dataset.id, 10);
-        if (state.selectedIds.has(id)) item.classList.add('selected');
-        else item.classList.remove('selected');
-    });
+    // Determine Mode
+    const isMatrix = pickerContentEl.querySelector('.matrix-container');
+
+    if (isMatrix) {
+        // --- Matrix View ---
+
+        // 1. Cells
+        const cells = pickerContentEl.querySelectorAll('.matrix-cell');
+        cells.forEach(cell => {
+            // @ts-ignore
+            const id = parseInt(cell.dataset.id, 10);
+            if (state.selectedIds.has(id)) cell.classList.add('selected');
+            else cell.classList.remove('selected');
+        });
+
+        // 2. Col Headers
+        const colHeaders = pickerContentEl.querySelectorAll('.matrix-header.col-header');
+        colHeaders.forEach(th => {
+            // @ts-ignore
+            const col = parseInt(th.dataset.col, 10);
+            let all = true;
+            for (let row = 0; row < 10; row++) { // 0-9
+                let id;
+                if (col === 0 && row === 0) id = 100;
+                else id = row * 10 + col;
+
+                if (!state.selectedIds.has(id)) {
+                    all = false;
+                    break;
+                }
+            }
+            if (all) th.classList.add('selected');
+            else th.classList.remove('selected');
+        });
+
+        // 3. Row Headers
+        const rowHeaders = pickerContentEl.querySelectorAll('.matrix-header.row-header');
+        rowHeaders.forEach(th => {
+            // @ts-ignore
+            const row = parseInt(th.dataset.row, 10);
+            let all = true;
+            for (let col = 0; col < 10; col++) { // 0-9
+                let id;
+                if (col === 0 && row === 0) id = 100;
+                else id = row * 10 + col;
+
+                if (!state.selectedIds.has(id)) {
+                    all = false;
+                    break;
+                }
+            }
+            if (all) th.classList.add('selected');
+            else th.classList.remove('selected');
+        });
+
+    } else {
+        // --- Section View ---
+        const sections = pickerContentEl.querySelectorAll('.section-block');
+        sections.forEach(section => {
+            const items = section.querySelectorAll('.card-item');
+            if (items.length === 0) return;
+
+            let allSelected = true;
+            items.forEach(item => {
+                // @ts-ignore
+                const id = parseInt(item.dataset.id, 10);
+                if (state.selectedIds.has(id)) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                    allSelected = false;
+                }
+            });
+
+            const header = section.querySelector('.section-header');
+            if (header) {
+                if (allSelected) header.classList.add('selected');
+                else header.classList.remove('selected');
+            }
+        });
+    }
 }

@@ -168,6 +168,20 @@
     border-color: #111827;
 }
 
+.btn.text-only {
+    background: transparent;
+    border: 1px dashed rgba(15, 23, 42, .3);
+    box-shadow: none;
+    color: var(--muted);
+    font-weight: normal;
+}
+
+.btn.text-only:hover {
+    background: #f1f5f9;
+    color: var(--fg);
+    border-color: var(--fg);
+}
+
 .field {
     display: flex;
     align-items: center;
@@ -360,6 +374,13 @@
     cursor: default;
 }
 
+.matrix-header.selected,
+.section-header.selected {
+    background: #14532d;
+    color: #fff;
+    border-color: #14532d;
+}
+
 .card-item {
     padding: 8px 4px;
     display: flex;
@@ -387,6 +408,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.selection-count {
+    text-align: center;
+    font-weight: bold;
+    color: var(--c-next);
+    font-size: 14px;
+    margin-bottom: 4px;
 }
 
 .hidden {
