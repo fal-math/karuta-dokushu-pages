@@ -56,6 +56,12 @@ export async function setupDeck(ids) {
     const jokaRes = await fetch(JOKA_URL).then(r => r.json());
     const filteredCards = cards.filter(c => ids.includes(c.id));
 
+    // Fisher-Yates Shuffle
+    for (let i = filteredCards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredCards[i], filteredCards[j]] = [filteredCards[j], filteredCards[i]];
+    }
+
     const newDeck = [jokaRes, ...filteredCards];
     mutators.setDeck(newDeck);
     mutators.setCurrentIndex(1);
