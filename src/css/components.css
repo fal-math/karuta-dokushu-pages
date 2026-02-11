@@ -168,6 +168,20 @@
     border-color: #111827;
 }
 
+.btn.text-only {
+    background: transparent;
+    border: 1px dashed rgba(15, 23, 42, .3);
+    box-shadow: none;
+    color: var(--muted);
+    font-weight: normal;
+}
+
+.btn.text-only:hover {
+    background: #f1f5f9;
+    color: var(--fg);
+    border-color: var(--fg);
+}
+
 .field {
     display: flex;
     align-items: center;
@@ -245,21 +259,126 @@
 }
 
 .picker-controls {
+    display: none;
+    /* Deprecated */
+}
+
+/* New Toolbar */
+.picker-toolbar {
     display: flex;
-    justify-content: center;
-    gap: 8px;
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 16px;
 }
 
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+.sort-grp,
+.action-grp {
+    display: flex;
     gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.sort-grp .btn.active {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+}
+
+/* Content Area */
+.picker-content {
+    flex: 1;
     overflow-y: auto;
-    padding: 8px;
-    margin-bottom: 20px;
     border: 1px solid rgba(15, 23, 42, .12);
     border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+/* Section View */
+.section-block {
+    margin-bottom: 16px;
+}
+
+.section-header {
+    font-weight: bold;
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: background 0.1s;
+}
+
+.section-header:hover {
+    background: #e2e8f0;
+}
+
+.section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 6px;
+}
+
+/* Matrix View */
+.matrix-container {
+    display: flex;
+    justify-content: center;
+}
+
+.matrix-table {
+    border-collapse: separate;
+    border-spacing: 2px;
+}
+
+.matrix-cell,
+.matrix-header {
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select: none;
+}
+
+.matrix-header {
+    background: #f1f5f9;
+    font-weight: bold;
+    color: var(--muted);
+}
+
+.matrix-header:hover {
+    background: #cbd5e1;
+}
+
+.matrix-cell {
+    border: 1px solid rgba(15, 23, 42, .1);
+    background: #fff;
+    transition: all 0.1s;
+}
+
+.matrix-cell.selected {
+    background: var(--c-next);
+    color: #fff;
+    border-color: var(--c-next);
+}
+
+.matrix-cell.empty {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+.matrix-header.selected,
+.section-header.selected {
+    background: #14532d;
+    color: #fff;
+    border-color: #14532d;
 }
 
 .card-item {
@@ -289,6 +408,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.selection-count {
+    text-align: center;
+    font-weight: bold;
+    color: var(--c-next);
+    font-size: 14px;
+    margin-bottom: 4px;
 }
 
 .hidden {
