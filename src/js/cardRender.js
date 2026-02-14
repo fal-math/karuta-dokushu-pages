@@ -18,7 +18,7 @@ export function renderParts(parts) {
     .map((p) => {
       if (typeof p === "string") return formatText(p);
       if (typeof p === "object" && "rb" in p && "rt" in p) {
-        return `<ruby>${formatText(p.rb)}<rt>${formatText(p.rt)}</rt></ruby>`;
+        return `<ruby>${formatText(p.rb)}<rt>${p.rt}</rt></ruby>`;
       }
       return "";
     })

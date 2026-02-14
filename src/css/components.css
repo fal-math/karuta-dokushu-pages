@@ -3,6 +3,10 @@
     display: flex;
     gap: 24px;
     justify-content: center;
+    flex: 1;
+    min-height: 0;
+    align-items: center;
+    padding: 10px 0;
 }
 
 .kudiv>div {
@@ -16,9 +20,10 @@
     writing-mode: vertical-rl;
     text-orientation: upright;
     line-height: 2;
-    font-size: clamp(24px, 5vmin, 32px);
+    font-size: clamp(16px, 5vmin, 32px);
     width: 42vw;
-    height: 50vh;
+    height: 100%;
+    max-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -81,12 +86,16 @@
 .gauge-wrap {
     display: grid;
     place-items: center;
-    height: 80%;
+    flex: 1;
+    min-height: 0;
+    padding: 10px;
 }
 
 .gauge {
     position: relative;
-    width: min(64vmin, 300px);
+    width: auto;
+    height: 100%;
+    max-height: 300px;
     aspect-ratio: 1;
 }
 
