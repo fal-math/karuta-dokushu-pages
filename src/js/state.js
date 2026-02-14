@@ -1,5 +1,6 @@
 /** @typedef {import('./types.js').Card} Card */
 import { saveState, loadState } from './storage.js';
+import { CONSTANTS } from './constants.js';
 
 export const state = {
     /** @type {Card[]} */
@@ -8,7 +9,7 @@ export const state = {
     deck: [],
     currentIndex: 1,
     /** @type {Set<number>} */
-    selectedIds: new Set([87, 18, 57, 22, 70, 81, 77]), // むすめふさほせ
+    selectedIds: new Set(CONSTANTS.INITIAL_SELECTED_IDS), // むすめふさほせ
     /** @type {'id'|'kimariji'|'kimariji-len'|'group'} */
     currentSort: 'group',
     unitSeconds: 1.0,
