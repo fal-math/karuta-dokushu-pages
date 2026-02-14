@@ -10,6 +10,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 body {

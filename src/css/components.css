@@ -16,15 +16,16 @@
     writing-mode: vertical-rl;
     text-orientation: upright;
     line-height: 2;
-    font-size: clamp(14px, 2.5vmin, 16px);
-    min-height: 250px;
+    font-size: clamp(24px, 5vmin, 32px);
+    width: 42vw;
+    height: 50vh;
     display: flex;
-    flex: 1;
     align-items: center;
     justify-content: center;
     padding: 5px;
     border: 2px solid;
     background: var(--bg-block);
+    flex-shrink: 0;
 }
 
 #prevCard {
@@ -242,12 +243,12 @@
 
 .btn.large {
     padding: 16px;
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .btn.small {
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 /* 札選択ピッカー */
@@ -389,8 +390,8 @@
     border: 1px solid rgba(15, 23, 42, .12);
     border-radius: 8px;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
     background: #fff;
     transition: all 0.1s;
     user-select: none;
@@ -420,4 +421,65 @@
 
 .hidden {
     display: none !important;
+}
+
+/* Long Vowel Visualization (Reverted to Shapes) */
+.long-vowel-1,
+.long-vowel-2,
+.trailing-wave {
+    display: inline-block;
+    /* vertical-align: middle; removed to rely on baseline */
+    width: 1em; /* Standard font width */
+    position: relative;
+}
+
+/* 
+ * Short line (ー)
+ * Use linear-gradient to draw a 2px vertical line in the exact center.
+ */
+.long-vowel-1 {
+    height: 0.4em;
+    background: linear-gradient(to right, 
+        transparent calc(50% - 1px), 
+        currentColor calc(50% - 1px), 
+        currentColor calc(50% + 1px), 
+        transparent calc(50% + 1px)
+    );
+}
+
+/* 
+ * Long line (ーー)
+ * Spans 1.1em height.
+ */
+.long-vowel-2 {
+    height: 0.9em;
+    background: linear-gradient(to right, 
+        transparent calc(50% - 1px), 
+        currentColor calc(50% - 1px), 
+        currentColor calc(50% + 1px), 
+        transparent calc(50% + 1px)
+    );
+}
+
+/* 
+ * Triangle Trail (▼)
+ * Use clip-path on the element itself filled with currentColor.
+ */
+.trailing-wave {
+    height: 2em;
+    background: currentColor;
+    clip-path: polygon(
+        calc(50% - 3px) 0, 
+        calc(50% + 3px) 0, 
+        50% 100%
+    );
+}
+
+/* Ensure no pseudo-elements interfere */
+.long-vowel-1::after,
+.long-vowel-2::after,
+.trailing-wave::after,
+.trailing-wave::before {
+    content: none;
+    display: none;
 }
