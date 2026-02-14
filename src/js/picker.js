@@ -1,13 +1,12 @@
 import { state, getters, mutators } from './state.js';
+import { CONSTANTS } from './constants.js';
 
 // DOM References (will be initialized in initPicker)
 /** @type {HTMLElement} */
 let pickerContentEl = null;
 
-const GROUP_ORDER_STR = "むすめふさほせうつしもゆいちひきはやよかみたこおわなあ";
-const ONE_JI_STR = "むすめふさほせ";
 const GROUP_MAP = {};
-Array.from(GROUP_ORDER_STR).forEach((char, idx) => {
+Array.from(CONSTANTS.GROUP_ORDER_STR).forEach((char, idx) => {
     GROUP_MAP[char] = idx;
 });
 
@@ -97,8 +96,8 @@ function renderSections(sortType) {
             key = `${k.length}字`;
         } else if (sortType === 'group') {
             const char = k.charAt(0);
-            if (ONE_JI_STR.includes(char)) {
-                key = ONE_JI_STR;
+            if (CONSTANTS.ONE_JI_STR.includes(char)) {
+                key = CONSTANTS.ONE_JI_STR;
             } else {
                 key = GROUP_MAP[char] !== undefined ? char : '他';
             }
@@ -114,8 +113,8 @@ function renderSections(sortType) {
         sortedKeys.sort((a, b) => parseInt(a) - parseInt(b));
     } else if (sortType === 'group') {
         sortedKeys.sort((a, b) => {
-            if (a === ONE_JI_STR) return -1; // First
-            if (b === ONE_JI_STR) return 1;
+            if (a === CONSTANTS.ONE_JI_STR) return -1; // First
+            if (b === CONSTANTS.ONE_JI_STR) return 1;
 
             const idxA = GROUP_MAP[a] !== undefined ? GROUP_MAP[a] : 999;
             const idxB = GROUP_MAP[b] !== undefined ? GROUP_MAP[b] : 999;
@@ -137,7 +136,7 @@ function renderSections(sortType) {
                 if (idxA !== idxB) return idxA - idxB;
                 return (a.kimariji || '').localeCompare(b.kimariji || '', 'ja');
             });
-        } else if (sortType === 'group' && key === ONE_JI_STR) {
+        } else if (sortType === 'group' && key === CONSTANTS.ONE_JI_STR) {
             // Musume Sort within the group
             groupCards.sort((a, b) => {
                 const ka = (a.kimariji || '').charAt(0);

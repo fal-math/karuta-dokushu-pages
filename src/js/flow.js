@@ -1,8 +1,9 @@
 import { getters, mutators, persistence } from './state.js';
 import { renderTanka } from './cardRender.js';
 import { startTimer, resetTimer, paintSegmentsRing } from './timer.js';
-
-const JOKA_URL = './src/data/joka.json';
+import { api } from './api.js';
+import { CONFIG } from './config.js';
+import { CONSTANTS } from './constants.js';
 
 let els = {}; // DOM Elements container
 
@@ -22,10 +23,10 @@ export function renderCurrentCard() {
     if (els.nextCard) els.nextCard.innerHTML = renderTanka(currentCard.lines, true);
     if (els.prevCard) els.prevCard.innerHTML = prevCard ? renderTanka(prevCard.lines, false) : "???";
 
-    if (els.progressLabel) els.progressLabel.textContent = `${currentIndex}/${deck.length - 1}`;
+    if (els.progressLabel) els.progressLabel.textContent = `${currentIndex} / ${deck.length - 1}`;
 
     if (els.btnPrev) els.btnPrev.disabled = (currentIndex === 1);
-    // btnNext disabled logic if needed
+    if (els.btnNext) els.btnNext.disabled = (currentIndex === deck.length - 1);
 }
 
 export function goPrev() {
@@ -46,14 +47,12 @@ export function goNext() {
         mutators.setCurrentIndex(currentIndex + 1);
         renderCurrentCard();
         persistence.save();
-    } else if (currentIndex === deck.length - 1) {
-        alert('すべての札を読み終えました！');
     }
 }
 
 export async function setupDeck(ids) {
     const cards = getters.getCards();
-    const jokaRes = await fetch(JOKA_URL).then(r => r.json());
+    const jokaRes = await api.fetchJoka();
     const filteredCards = cards.filter(c => ids.includes(c.id));
 
     // Fisher-Yates Shuffle
@@ -72,19 +71,18 @@ export async function setupDeck(ids) {
 }
 
 export function handleStart() {
-    const segmentLabelArray = ["下の句", "余韻", "間合い", "上の句"];
     const unitSec = getters.getUnitSeconds();
 
     startTimer({
-        getUnitSec: () => Math.max(unitSec || 1, 0.1),
+        getUnitSec: () => Math.max(unitSec || CONFIG.DEFAULT_UNIT_SECONDS, CONFIG.MIN_UNIT_SECONDS),
         onUpdate: ({ fraction, segIdx }) => {
             if (els.elapsedOverlay) els.elapsedOverlay.style.setProperty('--deg', (fraction * 360) + 'deg');
-            if (els.segmentLabel) els.segmentLabel.textContent = segmentLabelArray[segIdx];
+            if (els.segmentLabel) els.segmentLabel.textContent = CONFIG.SEGMENT_LABELS[segIdx];
         },
         onComplete: () => {
             if (els.btnStartTimer) els.btnStartTimer.disabled = false;
         }
-    });
+    }, CONSTANTS.SEGMENT_UNITS);
     if (els.btnStartTimer) els.btnStartTimer.disabled = true;
 }
 

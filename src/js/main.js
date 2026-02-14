@@ -6,9 +6,10 @@ import {
 } from './flow.js';
 import { updateClock } from './clock.js';
 import { paintSegmentsRing } from './timer.js';
+import { api } from './api.js';
+import { CONSTANTS } from './constants.js';
 
-const JOKA_URL = './src/data/joka.json';
-const HYAKUNIN_URL = './src/data/hyakunin_isshu.json';
+// Constants moved to config.js / api.js
 
 /* =======================
    DOM 参照
@@ -41,6 +42,7 @@ const dom = {
     sortButtons: document.getElementById('sortButtons'),
     pickerContent: document.getElementById('pickerContent'),
     selectionCount: document.getElementById('selectionCount'),
+    btnExit: document.getElementById('btnExit'),
 };
 
 /* =======================
@@ -57,13 +59,13 @@ async function init() {
     setInterval(() => updateClock(dom.clock), 1000);
 
     // タイマー初期描画
-    paintSegmentsRing(dom.segmentsRing);
+    paintSegmentsRing(dom.segmentsRing, CONSTANTS.SEGMENT_UNITS);
 
     // データ読込み
     try {
         const [jokaRes, cardsRes] = await Promise.all([
-            fetch(JOKA_URL).then(r => r.json()),
-            fetch(HYAKUNIN_URL).then(r => r.json())
+            api.fetchJoka(),
+            api.fetchCards()
         ]);
         mutators.setCards(cardsRes);
 
@@ -160,9 +162,10 @@ async function init() {
     });
 
     // Global expose for menu exit button (onclick="exitToStart()") if used in HTML
-    // But index.html likely uses ID binding or onclick attribute?
-    // Let's check index.html for exitToStart usage. It was window.exitToStart.
-    window.exitToStart = exitToStart;
+    // Refactored to use addEventListener on #btnExit
+    if (dom.btnExit) {
+        dom.btnExit.addEventListener('click', exitToStart);
+    }
 }
 
 // 離脱防止の警告
